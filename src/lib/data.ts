@@ -7,7 +7,7 @@ export const profile = {
   tagline: "I build dApps, AI agents and interfaces that feel alive.",
   bio: "Ambitious problem solver from Karachi who ships across the entire stack — pixel-perfect React frontends, NestJS backends, cross-chain smart contracts and Google ADK agents. Currently powering Web3 & AI at Permission.io.",
   careerStart: new Date(2019, 0, 1),
-  email: "saqlain1020@outlook.com",
+  email: "saqlainprinters@gmail.com",
   links: {
     github: "https://github.com/saqlain1020",
     linkedin: "https://www.linkedin.com/in/saqlain1020/",

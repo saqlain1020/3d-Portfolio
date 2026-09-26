@@ -97,6 +97,18 @@ function QuestCard({ q, index, open, read, onToggle }: { q: Quest; index: number
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden">
                 <div className="px-5 sm:px-6 pb-6">
                   <p className="text-white/75">{q.summary}</p>
+                  {q.apps && (
+                    <>
+                      <div className="font-mono text-[10px] tracking-[0.3em] text-muted mt-5 mb-2">SURFACES</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {q.apps.map((a) => (
+                          <span key={a} className="font-mono text-[11px] px-2 py-1 bg-cyan/10 text-cyan border border-cyan/30">
+                            {a}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   <div className="font-mono text-[10px] tracking-[0.3em] text-muted mt-5 mb-3">OBJECTIVES</div>
                   <ul className="space-y-2">
                     {q.objectives.map((o, i) => (

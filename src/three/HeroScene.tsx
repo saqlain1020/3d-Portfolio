@@ -118,13 +118,15 @@ function FloatingShards() {
   );
 }
 
-export default function HeroScene({ active, mobile }: { active: boolean; mobile: boolean }) {
+export default function HeroScene({ active, mobile, onReady }: { active: boolean; mobile: boolean; onReady?: () => void }) {
   return (
     <Canvas
       frameloop={active ? "always" : "never"}
       dpr={[1, mobile ? 1.5 : 2]}
       camera={{ position: [0, 0, 8], fov: 45 }}
       gl={{ antialias: false, powerPreference: "high-performance" }}
+      // Wait a frame after creation so the first render is on screen before fading in.
+      onCreated={() => requestAnimationFrame(() => onReady?.())}
     >
       <color attach="background" args={["#05050a"]} />
       <fog attach="fog" args={["#05050a", 8, 22]} />

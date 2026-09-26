@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "../lib/scroll";
 import { archive, planets, profile, projects } from "../lib/data";
 import { useInView, useMediaQuery, yearsSince } from "../lib/hooks";
@@ -21,11 +21,17 @@ export default function Hero({ ready }: { ready: boolean }) {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (!ready) return;
+  const intro = useRef<gsap.core.Timeline | null>(null);
+  const [sceneShown, setSceneShown] = useState(false);
+
+  // Build the intro paused on mount so the hero is already in its hidden start state
+  // underneath the boot screen; otherwise it flashes fully visible during the boot
+  // screen's exit before from() snaps it hidden.
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.from("[data-letter]", { yPercent: 120, rotate: 8, duration: 1.4, stagger: 0.05 })
+      intro.current = gsap
+        .timeline({ paused: true, defaults: { ease: "expo.out" } })
+        .from("[data-letter]", { yPercent: 120, rotate: 8, duration: 1.4, stagger: 0.05 })
         .from("[data-fade]", { y: 30, opacity: 0, duration: 1, stagger: 0.1 }, "-=1")
         .from("[data-line]", { scaleX: 0, duration: 1.2 }, "-=1.1");
       gsap.to("[data-parallax]", {
@@ -36,6 +42,10 @@ export default function Hero({ ready }: { ready: boolean }) {
       });
     }, title);
     return () => ctx.revert();
+  }, []);
+
+  useEffect(() => {
+    if (ready) intro.current?.play();
   }, [ready]);
 
   const years = yearsSince(profile.careerStart);
@@ -43,8 +53,8 @@ export default function Hero({ ready }: { ready: boolean }) {
 
   return (
     <section id="home" ref={ref} className="relative h-[100svh] min-h-[640px] overflow-hidden">
-      <div className="absolute inset-0">
-        <Suspense fallback={null}>{ready && <HeroScene active={inView} mobile={mobile} />}</Suspense>
+      <div className={`absolute inset-0 transition-opacity duration-[1600ms] ease-out ${sceneShown ? "opacity-100" : "opacity-0"}`}>
+        <Suspense fallback={null}>{ready && <HeroScene active={inView} mobile={mobile} onReady={() => setSceneShown(true)} />}</Suspense>
       </div>
       <div className="absolute inset-0 bg-gradient-to-r from-void via-void/60 to-transparent pointer-events-none" />
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-void to-transparent pointer-events-none" />
